@@ -5,6 +5,7 @@ from web3 import Web3
 import pandas as pd
 
 # You will want to choose a more reliable node in production if you run this under load
+excelDocName="output.xlsx"
 node = "https://cloudflare-eth.com"
 # Target addresses to watch. Note you can extend this list
 addresses = [
@@ -20,7 +21,7 @@ wallets = [
 
 # PART II: Code to make it work
 
-# Connecy
+# Connect to the web3 provider
 web3 = Web3(Web3.HTTPProvider(node))
 while (True):
     try: 
@@ -43,11 +44,17 @@ for address in addresses:
 
     # Bonus: Export to its own sheet in Excel file
     df = pd.DataFrame(balances)#.iloc[:,1:]
-    with pd.ExcelWriter("./output.xlsx", mode='a', if_sheet_exists='replace') as writer:
-        df.to_excel(
-            writer, 
-            sheet_name=address, 
-            header=["Wallet", "Balance"], 
-            
-        
-        )
+    try:
+        with pd.ExcelWriter(excelDocName, mode='a', if_sheet_exists='replace') as writer:
+            df.to_excel(
+                writer, 
+                sheet_name=address, 
+                header=["Wallet", "Balance"], 
+            )
+    except: 
+        with pd.ExcelWriter(excelDocName, mode='w') as writer:
+            df.to_excel(
+                writer, 
+                sheet_name=address, 
+                header=["Wallet", "Balance"], 
+            )
